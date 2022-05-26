@@ -19,8 +19,7 @@ li {
 }
 
 a{
-  background-color: gray;
-  padding: 1rem;
+  font-weight: bold;
   text-decoration: none;
-  color: pink;
+  color: teal;
 }
