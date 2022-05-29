@@ -45,6 +45,7 @@ export function Register () {
         setRegisterDone(true)
     }
 
+
     return <>
         <h3>Registrera dig här!</h3>
         <form onSubmit={registerUser}>
@@ -72,7 +73,7 @@ export function Register () {
             <button type="submit">Registera</button>
         </form>
         <div>
-        {registerDone&& <p>Det gick att registrera!</p>}
+        {registerDone && <p>Det gick att registrera!</p>}
         </div>
 
         <div>

@@ -1,38 +1,96 @@
-import { userInfo } from "os";
 import { useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router";
-import { INewUser } from "../models/INewUser";
+import { useParams } from "react-router";
+import { ISubscribers } from "../models/ISubscribers";
+
 
 export function Inlogged () {
-    const [users, setUsers] = useState("");
-    const [userID, setUserId] = useState(0);
-    const [storedUser, setStoredUser] = useState(0);
-    let params = useParams();
 
+    const [users, setUsers] = useState<ISubscribers[]>([]);
+    const [newsletter, setNewsLetter] = useState(false)
+    let { id } = useParams();
 
-    useEffect(() => {
+    let usersID = id;
 
-        fetch(`http://localhost:5000/users/loggin/` + params.id)
-        .then(response => response.json())
+findanyUser()
+
+function findanyUser() {
+    let findLS = localStorage.getItem("id");
+    if(!findLS) {
+        alert("Det gick inte att logga in, prova igen!")
+        window.location.href = "/loggin/";
+    } else {
+
+    }
+}
+
+useEffect(() => {
+
+    fetch(`http://localhost:5000/users/loggedin/`)
+        .then(response => { return response.json()})
         .then(data => {
             setUsers(data)
-            console.log(data.firstName);
-            
-            
         });
 
-        if(params.id) {
-            setUserId(+params.id)
+}, [])
+    
+    function changeNewsLetter() {
+
+        if(newsletter === false) {
+            setNewsLetter(true)
+        } else {
+            setNewsLetter(false)
         }
 
-    }, []); 
+        let changeUser = {
+            _id: usersID,
+            newsLetter: newsletter, 
+        }
 
+        fetch("http://localhost:5000/users/acceptnews", {
+           method: "PUT", 
+           headers: { 
+               Accept: "application/json",
+               "content-type": "application/json" },
+           body: JSON.stringify(changeUser) })
+        .then(response => response.json())
+        .then(users => {
+
+        })
+        .catch(error => {
+        })
         
-    return <><h3>Välkommen!</h3>
-    <div>
-      
-    </div>
-    
+        setTimeout(function(){
+            window.location.reload()
+        }, 5000);
+  
+    }
+
+   let UsersFromApi = users.map((users: ISubscribers) => {
+
+        if (usersID === users._id) {
+
+            return (<div key={users._id}>
+                <h4>{users.firstName} {users.lastName}</h4>
+                {(users.newsLetter === true)? <><p>Du prenumerar på nyhetsbrevet!</p> <button onClick={changeNewsLetter}>Sluta prenumerera!</button></>:
+                <> <p>Du prenumerar inte på nyhetsbrevet!</p> <button onClick={changeNewsLetter}>Börja prenumerera!</button></>}
+
+
+            </div>)
+        }
+    })
+
+
+    function loggOut() {
+        localStorage.clear();
+        window.location.href = "/loggin/";
+    }
+
+    return <><h2>Välkommen!</h2>
+
+            {UsersFromApi}
+
+            <button onClick={loggOut}>Logga ut!</button>
+
     </>
     
 }
