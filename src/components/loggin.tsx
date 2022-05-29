@@ -35,7 +35,7 @@ export function Loggin () {
             
             if (users !== "false") {
                 localStorage.setItem("id", users);
-                window.location.href = "/inlogged/";
+                window.location.href = "/inlogged/" + `${users}`;
             } else {
                 setFalseMessage(true)
             }
