@@ -11,20 +11,29 @@ export function Register () {
         lastName: "",
         email: "",
         passWord: "",
-        newsLetter: trueNewsLetter,
+        newsLetter: true,
     });
 
     const [registerDone, setRegisterDone] = useState(false);
 
     function handleNewsLetter() {
         setTrueNewsletter(true)
+        console.log(trueNewsLetter);
+        
     }
 
     function handleUser(e: ChangeEvent<HTMLInputElement>) {
-        let name = e.target.name;
-        setNewUser({...newUser, [name]: e.target.value})
-    };
 
+        if (e.target.name !== "newsLetter") {
+            setNewUser({...newUser, [e.target.name]: e.target.value})
+        } else {
+        setNewUser({
+            ...newUser, 
+            [e.target.name]: !newUser.newsLetter,
+        }); 
+        }
+    };
+    
     function registerUser() {
 
         let newUserRegister = new Users(newUser.firstName, newUser.lastName, newUser.email, newUser.passWord, newUser.newsLetter)
@@ -35,20 +44,31 @@ export function Register () {
                Accept: "application/json",
                "content-type": "application/json" },
            body: JSON.stringify(newUserRegister) })
-        .then(response => response.json())
+        .then(response => {
+            response.json() 
+                setRegisterDone(true)
+        })
+
         .catch(error => {
             alert("Det gick inte att registrera en ny användare!")
             console.log(error);
             
         })
 
-        setRegisterDone(true)
+        setNewUser({
+            firstName: "",
+            lastName: "",
+            email: "",
+            passWord: "",
+            newsLetter: false,
+        })
+
     }
 
 
     return <>
         <h3>Registrera dig här!</h3>
-        <form onSubmit={registerUser}>
+        <form >
             <div>
                 <input type="text" name="firstName" placeholder="Förnamn" value={newUser.firstName} onChange={handleUser}/>
             </div>
@@ -66,12 +86,13 @@ export function Register () {
                 <div>
                     <label>
                     Ja tack! 
-                    <input type="checkbox" checked={trueNewsLetter} onChange={handleNewsLetter}/>
+                    <input type="checkbox" name="newsletter" onChange={(handleUser)}/>
                     </label>
                 </div>
             </div>
-            <button type="submit">Registera</button>
+            <button onClick={(e) => {e.preventDefault(); registerUser()}}>Registera</button>
         </form>
+
         <div>
         {registerDone && <p>Det gick att registrera!</p>}
         </div>
